@@ -1,0 +1,403 @@
+Introduction to Go
+
+Miguel Perez
+Senior Software Engineer, HelloAlfred
+@miguel0020
+
+: Hello everyone,
+
+: My name is Miguel Perez.
+* Agenda
+
+- What is Go?
+- Hello World
+- Basic Types & Composite Types
+- Pointers & Interfaces
+- Error handling
+- Concurrency
+- Testing
+
+: Today we will covering the fundamentals for getting started with the Go programming language
+
+* Agenda cont.
+
+- Go toolchain & Dependency management
+- Best Practices
+- Build a HTTP server
+- Q&A
+
+: and afterwards we willing go over writing a HTTP server
+
+* Presentation material
+
+.link https://github.com/miguel250/go-intro
+
+: You can find this presentation at this link
+
+* What is Go?
+
+: Go started out as a side project at Google. The language was designed with simplicity, safety, and readability in mind. The creators took features from other languages that they liked and adopted them in Go.
+
+* Hello World
+
+.play examples/presentation/hello_world.go
+
+: Go uses the "package main" and the function name main as entry point to run a program. "import" is use to include other packages. "fmt" is part of the Go standard packages.
+
+* Variables Declaration
+
+
+.code examples/presentation/hello_world.go /var/,/\"/ HLxxx
+: From our simple Hello World program, we can see that Go is a strong type language. This means that we need to declare the variable types and the compiler will make sure we don’t try to store a different variable type after the variable has been declared. Go has two ways to declare variables
+
+* Variables Declaration cont.
+  a := 1
+
+and
+
+  var x int = 1
+: By using ":=" the compiler will guess the type of the variable without you having to explicitly define the variable type. You will mostly use ":=" unless you need to declare a variable without initializing it. In this case you will use "var variable name follow by the type of the variable".
+
+
+* Variables Declaration cont.
+
+.play examples/presentation/anonymous_func.go /START OMIT/,/END OMIT/
+
+:  You can also declare anonymous functions as variables and pass them around to other functions.
+
+* Variables Declaration cont.
+
+  const Pi = 3.14
+
+: Go has a concept of constant variables. Constant variables can’t be changed after they have been declared.
+
+* Variables Declaration cont.
+
+  // Public method
+  func Area(w, l int) int {
+    return w * l
+  }
+
+  // private method
+  func perimeter(w, l int) int {
+    return 2 * (w + l)
+  }
+
+: One interesting thing about Go is how private and public variables and methods are defined.  If the name of the variable starts with a capital letter, the variable or method will be public. If it starts with a lowercase letter, the variable will be private and can’t be accessed outside of the package it was declared in.
+
+* Basic types
+- int
+- uint
+- string
+- float64
+- bool
+- complex
+
+
+: Go has a few basic data types. Go supports several sizes of integer and floating points.  If you need to add a float and an integer,
+
+* Basic types cont.
+
+.play examples/presentation/float_int_add.go
+
+: you will need to cast the integer to a float to be able to add them together. Go’s strings are UTF-8.
+* Basic types cont.
+
+.code examples/presentation/hello_world.go /var/,/\"/ HLxxx
+
+: This means that you can store Chinese characters, for example, with little effort. Strings in Go are wrapped in double quotes.
+
+* Basic types cont.
+   x := '\n'
+
+: A single quote is used to represent the unicode value of the character itself. Boolean values only have two possible types: true or false
+
+* Basic types cont
+
+   y := false
+
+   if !y {
+     y := true
+   }
+
+   for y {
+      y = false
+   }
+
+: which are conditions for "if" and "for" statements. Go also has built-in composite types (arrays, slices, maps, and structs).
+
+* Composite Types
+
+- Arrays
+- Slices
+- Maps
+- Structs
+
+: Composite types are created by combining the basic types. An array is a fixed-length sequence of zero or more items with the same type.
+
+* Arrays
+
+.play examples/presentation/arrays.go
+
+: You can then access the items in the array by using the index "apple := fruits[0]". If you try to access an index that doesn’t exist, you will get an out of range panic. In most cases you will not use arrays directly in Go. Slices are more often used in Go.
+
+* Slices
+
+.play examples/presentation/slices.go
+
+: A slice is a data structure that gives access to a subsequence of items in an array. A slice also grows and shrinks as necessary, making it more useful than an array. As you can see, a slice doesn’t need to start on index 0 like an array. You can access the data in the slice by using an index.
+
+* Slices cont.
+
+.play examples/presentation/slices_func.go
+
+: You can determine the length of a slice with len() and the capacity with cap(). You can append new items to a slice by using the built-in function append(). Append will add the new item if the slice has the capacity. In the case that the slice doesn’t have the necessary capacity to add a new item, append() will create a new underlying array with double the capacity and copy all items from the old array into the newly created array. A map in Go is a hash table.
+
+* Maps
+
+.play examples/presentation/maps.go
+
+: You can define a map with map[K]V. When declaring keys or values within a map, you need to be consistent with the data type you choose. For example, all keys must be integers, and all values must be strings. To declare a map you will use "x := make(map[string]int)", and a value can be set with "x["key"] = 5". Another way to declare a value is with "x := map[string]int{"key": 10}". You can access data in a map by using "key := x["key"]", and you can delete an item from a map by using delete(x["key"]). If a key in a map doesn’t exist, you will get a zero value. Let's talk a little more about zero values.
+
+* Zero Values
+
+.play examples/presentation/zero_values.go
+
+: When a variable is declared without an initial value, Go will default this variable to a "zero value". Depending on the variable type, the zero value could be "false", 0 for an integer, "" for an empty string, or nil for pointers. Knowing the zero value for a type is helpful because it allows you to write safer programs by knowing the default of a type that hasn’t been initialized. A struct allows grouping of zero or more named values with different types.
+
+* Structs
+
+.play examples/presentation/structs.go
+
+: A struct is defined with the keyword "type" followed by the name of the struct and the keyword "struct". It will look something like this: "type Animal struct { Name string }". A struct can be initialized by using "a := Animal{ Name: "Dog"}". Fields in a struct can be accessed by the name of the field using the dot notation.
+
+* Structs cont.
+
+.play examples/presentation/structs_methods.go
+
+: Structs can have methods attached to them. The difference between a method and a function in Go is that a method has extra parameters that appear before the function’s name.  These extra parameters attach the function to the struct. Variables in Go are passed between functions in two ways: as a copy or as a pointer.
+
+* Pointers
+
+.play examples/presentation/pointers.go
+
+: When a variable is passed as a pointer, the variable's address in memory is given to the function. If a pointer is not used to pass the variable, the variable will be copied, and the copy will be passed down to the function. This new copy of the variable will take as much space in memory as the original variable . To get the pointer of a variable, you can either use an ampersand (&), or you can use the built-in function new.To get the value of a pointer, you can use an asterisk(*).
+
+* Pointers cont.
+
+.play examples/presentation/pointer_dereference.go
+
+:  When a pointer of a struct is passed to a function, Go will automatically dereference the pointer. Dereferencing a pointer gives us access to the value the pointer points to.
+
+* Pointers cont.
+
+.play examples/presentation/pointer_receiver.go /START OMIT/,/END OMIT/
+
+: One of the things people struggle with while getting started with Go is when to use pointer method receivers. I personally always use them.
+
+* Interface types
+
+.play examples/presentation/interfaces.go  /START OMIT/,/END OMIT/
+
+: Interface types in Go make it possible to define a set of methods that a struct needs to be considered an instance of the interface. If the struct don't have the necessary methods, the Go compiler will fail to build the program. An interface is defined like this: "type Animal interface { Speak() }". You shouldn't use empty interfaces because you will be telling the compiler to not check the type while creating the binary. This could lead to your application panicking because of a type mismatch at runtime.A good example of how interface types are used is the sort package.
+
+* Interface types cont.
+
+.link https://play.golang.org/p/LZgZi-s8IX-
+
+: To satisfy the sort method, your struct needs to have Len, Swap, and Less as methods, or the code will not compile.
+
+
+* Error Handling
+
+.play examples/presentation/errors.go
+
+: Error handling in Go is different from other languages. The errors are returned to the caller function as a variable. The caller function can then decide to handle the error itself and continue or return the error. It is pretty useful to include the function name within each error. Doing so will make it easier to find and debug these errors.
+
+* Error Handling Cont
+
+.play examples/presentation/error_interface.go /START OMIT/,/END OMIT/
+
+: Error is an interface that other structs can implement to include more information about a given error.  You should never panic if your function fails to accomplish a task. You should always return an error back.
+
+* Concurrency
+
+.play examples/presentation/concurrency_no_wait.go
+
+: Go tries to make concurrent programming simple by providing goroutines. Goroutines allow a function to run concurrently with another function by using the keyword go. The keyword go takes an anonymous function, executes it, and then without waiting for it to finish, moves on to the next step of the program.
+
+* Concurrency Cont.
+
+.play examples/presentation/concurrency_wait.go
+
+: You can use the functions wait() and done() provided by the sync package to have your program wait until the goroutine is done before the program exits.
+
+* Concurrency Const
+- Lock & Lock methods
+- sync.RWMutex
+
+  type Animal struct {
+    sync.RWMutex // embeded struct
+    Name string
+    Type string
+  }
+
+  a := Animal{Name: "Spot", Type: "Dog"}
+  go func() {
+    a.RLock()
+    name := a.Name
+    defer a.RUnlock() // excute before returning
+  }()
+
+  go func() {
+    a.Lock()
+    a.Name = "Lighting"
+    defer a.Unlock() // excute before returning
+  }()
+
+: The sync package has other useful functions to help make concurrent programming easy. For example, you can use the methods Lock() and Unlock() that are included with sync.Mutex to lock and block access to a variable while another goroutine is using it. You can also use sync.RWMutex to specify what kind of lock you want to acquire on a variable. In the case that you just want to read the variable without changing it, you can use RLock() and it will block any goroutine trying to write to the variable until RUnlock() is called. While working on a concurrent program, you might need your goroutines to communicate with each other.
+
+* Testing
+  go test ./…
+
+: Go makes testing easy by allowing tests to live in the same directory as the code that they are testing. You can run your all your tests with this command: : "go test ./…". Most tests in Go use the testing package provided as part of the sandard packages.
+
+* Testing Cont.
+
+.play examples/presentation/tests.go  /START OMIT/,/END OMIT/
+
+:  This package comes with all the necessary components to write useful tests. The testing package allows you to access private methods and variables as long as the package name used by the test file is the same as the package with the private methods and variables. One really awesome feature of the testing package is the ability to detect race conditions.
+
+* Testing Cont.
+  // Don't do this!!
+  func parallelUpdateMap(m map[string]bool) {
+    var wg sync.WaitGroup
+    wg.Add(1)
+
+    go func() {
+      m["key2"] = false
+      wg.Done()
+    }()
+
+    go func() {
+      m["key1"] = false
+      wg.Done()
+    }()
+    wg.Done()
+  }
+
+  func TestRace(t *testing.T) {
+    m := make(map[string]bool)
+    parallelUpdateMap(m)
+
+    if !m["key2"] {
+      t.Error("Should be false")
+    }
+  }
+
+:If you run the test command with "-race", any code that tries to write to a variable from multiple goroutines at the same time will fail the test.
+
+* Testing Cont.
+  ==================
+  WARNING: DATA RACE
+  Write at 0x00c42008a2a0 by goroutine 9:
+    runtime.mapassign_faststr()
+        /home/miguel/.gvm/versions/go1.10.1.linux.amd64/src/runtime/hashmap_fast.go:694 +0x0
+    command-line-arguments.TestRace.func2()
+        /home/miguel/workspace/talks/intro-to-go/examples/example_test.go:34 +0x5d
+
+  Previous write at 0x00c42008a2a0 by goroutine 8:
+    runtime.mapassign_faststr()
+        /home/miguel/.gvm/versions/go1.10.1.linux.amd64/src/runtime/hashmap_fast.go:694 +0x0
+    command-line-arguments.TestRace.func1()
+        /home/miguel/workspace/talks/intro-to-go/examples/example_test.go:29 +0x5d
+
+  Goroutine 9 (running) created at:
+    command-line-arguments.TestRace()
+        /home/miguel/workspace/talks/intro-to-go/examples/example_test.go:33 +0x127
+    testing.tRunner()
+        /home/miguel/.gvm/versions/go1.10.1.linux.amd64/src/testing/testing.go:777 +0x16d
+
+  Goroutine 8 (finished) created at:
+    command-line-arguments.TestRace()
+        /home/miguel/workspace/talks/intro-to-go/examples/example_test.go:28 +0xfb
+    testing.tRunner()
+        /home/miguel/.gvm/versions/go1.10.1.linux.amd64/src/testing/testing.go:777 +0x16d
+  ==================
+  panic: sync: negative WaitGroup counter
+
+:  The test package also includes tools for understanding how well your code is tested.
+
+* Testing Coverage
+  go test -coverprofile=coverage.out ./...
+
+and
+
+  go tool cover -html=coverage.out"
+
+: You can use "go test -coverprofile=coverage.out ./..." and "go tool cover -html=coverage.out" to visualize your package test coverage. You don’t have to aim for 100% coverage—90% is enough. There is no untestable code. If necessary, refactor or rewrite to make it possible to test. It will save you a lot of headache and time.  Write test cases for bugs to stop regression from happening. To write testable code, write your tests while you are writing your code.
+
+* Table Driven Testing
+
+.play examples/presentation/test_failed.go /START OMIT/,/END OMIT/
+
+: One of my favorite testing methodologies in Go is table driven tests that are done in the Go codebase itself. The idea is to create a struct with all the different success and failure cases, and loop through them while reusing the same test code.
+
+* Table Driven Testing
+
+.play examples/presentation/test_pass.go /START OMIT/,/END OMIT/
+
+: If you are working in a package, add examples and use the test command to make sure your examples are working correctly.
+
+* Examples
+
+  package stringutil_test
+
+  import (
+      "fmt"
+
+      "github.com/golang/example/stringutil"
+  )
+
+  func ExampleReverse() {
+      fmt.Println(stringutil.Reverse("hello"))
+      // Output: olleh
+  }
+
+: go test will check if the output matches the expected output if it doesn't it will fail the test.
+
+
+* Dependency management
+.code examples/presentation/go.mod
+
+To be written
+
+* Toolchains
+- go fmt
+  gofmt -w yourcode.go
+- go doc
+  godoc fmt
+- go vet
+  go vet ./...
+- Cross compiling
+  GOOS=darwin GOARCH=amd64 go build hello.go
+
+: The Go community has created a ton of tools to make it easy to work with Go. Let's go over some of these tools and how they can help you. The command-line tool "gofmt" automatically formats your code, making your code easier to read and maintain. You can run "gofmt -w yourcode.go" to format your code. The next tool is "godoc". The "godoc" command generates documentation out of the comments and code. You can also see the documents for the standard packages by using "godoc fmt", "fmt" will be the package name. The "vet" command goes through your code and checks for suspicious constructs. For example, vet will check if you are ignoring any errors returned to you. We used the command "go build" to build our "Hello world" example. The "go build" command is able to cross compile binaries. This means that we can create a binary of a program that can run in Linux or MacOS even if it was built on a computer running Windows. To be able to create a MacOS binary you will need to tell the build command which operating system and architecture the binary will be running on. The command will look something like this "GOOS=darwin GOARCH=amd64 go build hello.go".
+
+* Best Practices
+- Keep your code short and simple.
+- Always write tests for your code.
+- Keep your dependency tree small. A little copying is better than a little dependency.
+- Make sure to always run gofmt on your code.
+- Always include documentation and examples with your packages.
+- Keep functions and files small.
+- Always handle your errors. Don't panic.
+
+: Just start writing code to solve your problem, and refactor as you learn more about the language. Remember to write tests. Use the Effective Go document and the Go codebase as a guideline on how something should be done
+
+* Build a webserver
+
+[[examples/tutorial]]
+
+*Q&A*
+
