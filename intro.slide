@@ -51,6 +51,7 @@ Senior Software Engineer, HelloAlfred
 : From our simple Hello World program, we can see that Go is a strong type language. This means that we need to declare the variable types and the compiler will make sure we don’t try to store a different variable type after the variable has been declared. Go has two ways to declare variables
 
 * Variables Declaration cont.
+  // can only be used inside a function
   a := 1
 
 and
@@ -58,12 +59,6 @@ and
   var x int = 1
 : By using ":=" the compiler will guess the type of the variable without you having to explicitly define the variable type. You will mostly use ":=" unless you need to declare a variable without initializing it. In this case you will use "var variable name follow by the type of the variable".
 
-
-* Variables Declaration cont.
-
-.play examples/presentation/anonymous_func.go /START OMIT/,/END OMIT/
-
-:  You can also declare anonymous functions as variables and pass them around to other functions.
 
 * Variables Declaration cont.
 
@@ -225,37 +220,6 @@ and
 .play examples/presentation/concurrency_no_wait.go
 
 : Go tries to make concurrent programming simple by providing goroutines. Goroutines allow a function to run concurrently with another function by using the keyword go. The keyword go takes an anonymous function, executes it, and then without waiting for it to finish, moves on to the next step of the program.
-
-* Concurrency Cont.
-
-.play examples/presentation/concurrency_wait.go
-
-: You can use the functions wait() and done() provided by the sync package to have your program wait until the goroutine is done before the program exits.
-
-* Concurrency Const
-- Lock & Lock methods
-- sync.RWMutex
-
-  type Animal struct {
-    sync.RWMutex // embeded struct
-    Name string
-    Type string
-  }
-
-  a := Animal{Name: "Spot", Type: "Dog"}
-  go func() {
-    a.RLock()
-    name := a.Name
-    defer a.RUnlock() // excute before returning
-  }()
-
-  go func() {
-    a.Lock()
-    a.Name = "Lighting"
-    defer a.Unlock() // excute before returning
-  }()
-
-: The sync package has other useful functions to help make concurrent programming easy. For example, you can use the methods Lock() and Unlock() that are included with sync.Mutex to lock and block access to a variable while another goroutine is using it. You can also use sync.RWMutex to specify what kind of lock you want to acquire on a variable. In the case that you just want to read the variable without changing it, you can use RLock() and it will block any goroutine trying to write to the variable until RUnlock() is called. While working on a concurrent program, you might need your goroutines to communicate with each other.
 
 * Testing
   go test ./…
