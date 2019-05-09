@@ -334,7 +334,9 @@ and
 * Dependency management
 .code examples/presentation/go.mod
 
-To be written
+  go mod init github.com/miguel250/http-server
+  go get github.com/julienschmidt/httprouter@master
+  go mod vendor
 
 * Toolchains
 - go fmt
